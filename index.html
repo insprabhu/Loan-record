@@ -84,8 +84,9 @@ document.getElementById('loanForm').addEventListener('submit', function(e){
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
-    formData.append('sheet','Issuance_Data');
-    formData.append('signatureData', canvas.toDataURL('image/png'));
+formData.append('sheet', 'Issuance_Data');
+formData.append('signatureData', document.getElementById('signatureCanvas').toDataURL('image/png'));
+
 
     fetch(APPS_SCRIPT_URL,{
         method:'POST',
