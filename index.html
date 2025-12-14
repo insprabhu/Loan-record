@@ -7,18 +7,29 @@
     <link rel="stylesheet" href="style.css"> 
 
     <style>
-        .tab { overflow: hidden; border-bottom: 2px solid var(--primary-color, #007bff); margin-bottom: 20px; }
-        .tab button { 
-            background-color: #f1f1f1; float: left; border: none; outline: none; cursor: pointer; 
-            padding: 14px 25px; transition: 0.3s; font-size: 16px; font-weight: 600;
-            border-radius: 8px 8px 0 0; margin-right: 5px; color: #555;
+        /* [आपके original index.html से CSS यहाँ पेस्ट किया गया है] */
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        h1 { text-align: center; color: #0056b3; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        fieldset { margin-bottom: 25px; border: 1px solid #007bff; padding: 20px; border-radius: 8px; }
+        legend { font-weight: bold; color: #007bff; padding: 0 10px; font-size: 1.2em; }
+        label { display: block; margin-bottom: 5px; margin-top: 10px; font-weight: 600; }
+        input[type="text"], input[type="number"], input[type="tel"], textarea {
+            width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
         }
-        .tab button:hover { background-color: #e9ecef; }
-        .tab button.active { background-color: var(--primary-color, #007bff); color: white; border-bottom: none; }
-        .tabcontent { 
-            padding: 20px; border: 1px solid #ced4da; border-radius: 0 0 10px 10px; 
-            background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+        input[type="file"] { margin-bottom: 15px; border: 1px dashed #aaa; padding: 10px; width: 100%; border-radius: 5px;}
+        #signatureCanvas, #returnSignatureCanvas { border: 2px solid #333; background-color: #fff; cursor: crosshair; display: block; margin-top: 5px; }
+        .btn { padding: 10px 15px; background-color: #5cb85c; color: white; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; margin-top: 10px; }
+        .btn-clear { background-color: #f0ad4e; margin-left: 10px; }
+        .btn-primary { background-color: #007bff; }
+        .btn:hover { opacity: 0.9; }
+        
+        /* Tabs */
+        .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; border-radius: 5px 5px 0 0; }
+        .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; font-size: 17px; }
+        .tab button:hover { background-color: #ddd; }
+        .tab button.active { background-color: #ccc; }
+        .tabcontent { padding: 6px 12px; border: 1px solid #ccc; border-top: none; background-color: white; border-radius: 0 0 5px 5px; }
         .hidden { display: none; }
     </style>
 </head>
@@ -74,7 +85,7 @@
             <fieldset>
                 <legend>फोटो और हस्ताक्षर</legend>
                 
-                <p style="color: #007bff; font-weight: bold;">✅ फ़ॉर्म भरते समय फ़ोटो सीधे फ़ोन से कैप्चर करें और अपलोड करें।</p>
+                <p style="color: #007bff; font-weight: bold;">✅ फ़ोटो अब Google Drive में सेव होंगी।</p>
 
                 <label for="customerPhoto">1. ग्राहक की लाइव फोटो:</label>
                 <input type="file" id="customerPhoto" name="customerPhoto" accept="image/*" capture="environment" required>
@@ -108,7 +119,7 @@
             <legend>रिकॉर्ड सर्च करें</legend>
             <label for="searchId">ग्राहक ID / मोबाइल नंबर डालें:</label>
             <input type="text" id="searchId" name="searchId_return" placeholder="रिकॉर्ड खोजने के लिए मोबाइल नंबर (Loan ID)" required>
-            <button type="button" class="btn btn-primary" style="background-color: #17a2b8;" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
+            <button type="button" class="btn" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
         </fieldset>
 
         <div id="loanDetailsDisplay" class="hidden">
@@ -146,10 +157,9 @@
     // ** Apps Script URL: आपके डिप्लॉयमेंट URL से भरा गया है **
     // *************************************************************
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwrgxw-peVF0XH4tExnN2eZINDLG8KnVZL8SE2uzgBYEDNYuIeXqWtsBt3uNZAbukhng/exec'; 
-    // यह URL आपके Deployment URL से मिलाना चाहिए।
     // *************************************************************
 
-    // --- General Functions ---
+    // --- General Functions (Tab and Signature logic remains the same) ---
     function openTab(evt, tabName) {
         let i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
@@ -172,8 +182,8 @@
         setupSignaturePad('signatureCanvas');
         setupSignaturePad('returnSignatureCanvas');
     });
-
-    // Signature Pad Functionality (Canvas drawing logic)
+    
+    // (Signature Pad Functionality here...)
     function setupSignaturePad(canvasId) {
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext('2d');
@@ -225,19 +235,19 @@
     }
     
     // ----------------------------------------------------
-    // --- Data Submission Functions (Using FormData for Files) ---
+    // --- Data Submission Functions (FIXED: Using FormData) ---
     // ----------------------------------------------------
 
-    // 1. Issuance Form Submission (Sends FormData)
+    // 1. Issuance Form Submission (Sends FormData for files and text)
     document.getElementById('loanIssuanceForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const submitButton = e.submitter;
         submitButton.disabled = true;
 
-        // FormData का उपयोग करें ताकि फ़ाइलें और टेक्स्ट दोनों एक साथ भेजे जा सकें
+        // FIX: FormData का उपयोग करें ताकि फ़ाइलें और टेक्स्ट दोनों एक साथ भेजे जा सकें
         const form = e.target;
-        const formData = new FormData(form); // Form के सभी इनपुट को FormData में शामिल करता है
+        const formData = new FormData(form);
         
         // Base64 हस्ताक्षर डेटा और शीट का नाम मैन्युअल रूप से जोड़ें
         formData.append('sheet', 'Issuance_Data');
@@ -246,7 +256,7 @@
         // AJAX call: Apps Script को FormData भेजना
         fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            body: formData, // FormData भेजने पर Content-Type हेडर की आवश्यकता नहीं होती
+            body: formData, // JSON.stringify हटा दिया गया है
         })
         .then(response => response.text())
         .then(text => {
@@ -254,7 +264,6 @@
             try {
                 result = JSON.parse(text);
             } catch (error) {
-                // यदि Apps Script JSON प्रतिक्रिया नहीं देता, तो यहाँ पकड़ा जाता है
                 result = { success: false, error: 'Non-JSON response received. Check Apps Script logs.' };
             }
 
@@ -278,7 +287,18 @@
 
     // 2. Return Form Search (Dummy Function remains the same)
     window.searchLoanRecord = function() {
-        // ... (यह केवल डमी फ़ंक्शन है)
+        const searchId = document.getElementById('searchId').value;
+        if (searchId) {
+            const dummyRecord = { name: "रमेश कुमार", amount: 50000, jewelry: "1 सोने की चेन, 20 ग्राम" };
+            document.getElementById('customerNameDisplay').textContent = dummyRecord.name;
+            document.getElementById('loanIDDisplay').textContent = searchId;
+            document.getElementById('loanAmountDisplay').textContent = dummyRecord.amount;
+            document.getElementById('jewelryDescDisplay_Return').textContent = dummyRecord.jewelry;
+            document.getElementById('loanDetailsDisplay').classList.remove('hidden');
+        } else {
+            alert('कृपया मोबाइल नंबर दर्ज करें।');
+            document.getElementById('loanDetailsDisplay').classList.add('hidden');
+        }
     }
 
     // 3. Loan Closure Form Submission (Sends FormData)
@@ -288,12 +308,13 @@
         const submitButton = e.submitter;
         submitButton.disabled = true;
         
+        // FIX: FormData का उपयोग करें
         const form = e.target;
         const formData = new FormData(form);
         
         // Base64 हस्ताक्षर डेटा और शीट का नाम मैन्युअल रूप से जोड़ें
         formData.append('sheet', 'Return_Data');
-        formData.append('searchId', document.getElementById('searchId').value); // Search ID भी भेजें
+        formData.append('searchId', document.getElementById('searchId').value); 
         formData.append('returnSignatureData', document.getElementById('returnSignatureCanvas').toDataURL('image/png'));
 
         // AJAX call: Apps Script को FormData भेजना
