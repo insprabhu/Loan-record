@@ -11,4 +11,78 @@ body { font-family: Arial; background:#f4f4f9; }
 label { font-weight:bold; display:block; margin-top:10px; }
 input, textarea { width:100%; padding:8px; }
 canvas { border:2px solid #000; margin-top:5px; }
-but
+button { margin-top:15px; padding:10px; }
+</style>
+</head>
+
+<body>
+<div class="container">
+<h2>नया गिरवी रिकॉर्ड</h2>
+
+<form
+  action="https://script.google.com/macros/s/AKfycbwwrgxw-peVF0XH4tExnN2eZINDLG8KnVZL8SE2uzgBYEDNYuIeXqWtsBt3uNZAbukhng/exec"
+  method="post"
+  enctype="multipart/form-data"
+>
+
+<input type="hidden" name="sheet" value="Issuance_Data">
+<input type="hidden" id="signatureData" name="signatureData">
+
+<label>नाम</label>
+<input name="name" required>
+
+<label>मोबाइल</label>
+<input name="mobile" required>
+
+<label>आधार</label>
+<input name="aadharId" required>
+
+<label>पता</label>
+<textarea name="address" required></textarea>
+
+<label>सोना वजन</label>
+<input name="goldWeight" required>
+
+<label>आभूषण विवरण</label>
+<textarea name="jewelryDesc" required></textarea>
+
+<label>ऋण राशि</label>
+<input name="loanAmount" required>
+
+<label>ब्याज</label>
+<input name="interestRate" required>
+
+<label>अवधि</label>
+<input name="loanDuration" required>
+
+<label>ग्राहक फोटो</label>
+<input type="file" name="customerPhoto" accept="image/*" capture required>
+
+<label>आधार फोटो</label>
+<input type="file" name="aadharPhoto" accept="image/*" capture required>
+
+<label>आभूषण फोटो</label>
+<input type="file" name="jewelryPhoto" accept="image/*" capture required>
+
+<label>हस्ताक्षर</label>
+<canvas id="sig" width="300" height="100"></canvas>
+<button type="button" onclick="clearSig()">Clear</button>
+
+<br><br>
+<button type="submit" onclick="saveSig()">Submit</button>
+</form>
+</div>
+
+<script>
+let c=document.getElementById("sig"),ctx=c.getContext("2d"),d=false;
+c.onmousedown=e=>{d=true;ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY);}
+c.onmousemove=e=>{if(d){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();}}
+c.onmouseup=()=>d=false;
+
+function clearSig(){ctx.clearRect(0,0,c.width,c.height);}
+function saveSig(){
+ document.getElementById("signatureData").value=c.toDataURL();
+}
+</script>
+</body>
+</html>
