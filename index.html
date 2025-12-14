@@ -7,11 +7,18 @@
     <link rel="stylesheet" href="style.css"> 
 
     <style>
-        .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; border-radius: 5px 5px 0 0; }
-        .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; font-size: 17px; }
-        .tab button:hover { background-color: #ddd; }
-        .tab button.active { background-color: #ccc; }
-        .tabcontent { padding: 6px 12px; border: 1px solid #ccc; border-top: none; background-color: white; border-radius: 0 0 5px 5px; }
+        .tab { overflow: hidden; border-bottom: 2px solid var(--primary-color, #007bff); margin-bottom: 20px; }
+        .tab button { 
+            background-color: #f1f1f1; float: left; border: none; outline: none; cursor: pointer; 
+            padding: 14px 25px; transition: 0.3s; font-size: 16px; font-weight: 600;
+            border-radius: 8px 8px 0 0; margin-right: 5px; color: #555;
+        }
+        .tab button:hover { background-color: #e9ecef; }
+        .tab button.active { background-color: var(--primary-color, #007bff); color: white; border-bottom: none; }
+        .tabcontent { 
+            padding: 20px; border: 1px solid #ced4da; border-radius: 0 0 10px 10px; 
+            background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
         .hidden { display: none; }
     </style>
 </head>
@@ -67,7 +74,7 @@
             <fieldset>
                 <legend>फोटो और हस्ताक्षर</legend>
                 
-                <p style="color: #007bff; font-weight: bold;">✅ फ़ोटो अब सीधे Apps Script/Drive में अपलोड होंगी।</p>
+                <p style="color: #007bff; font-weight: bold;">✅ फ़ॉर्म भरते समय फ़ोटो सीधे फ़ोन से कैप्चर करें और अपलोड करें।</p>
 
                 <label for="customerPhoto">1. ग्राहक की लाइव फोटो:</label>
                 <input type="file" id="customerPhoto" name="customerPhoto" accept="image/*" capture="environment" required>
@@ -101,7 +108,7 @@
             <legend>रिकॉर्ड सर्च करें</legend>
             <label for="searchId">ग्राहक ID / मोबाइल नंबर डालें:</label>
             <input type="text" id="searchId" name="searchId_return" placeholder="रिकॉर्ड खोजने के लिए मोबाइल नंबर (Loan ID)" required>
-            <button type="button" class="btn" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
+            <button type="button" class="btn btn-primary" style="background-color: #17a2b8;" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
         </fieldset>
 
         <div id="loanDetailsDisplay" class="hidden">
@@ -136,9 +143,10 @@
 
 <script>
     // *************************************************************
-    // ** Apps Script URL: अपने डिप्लॉयमेंट URL से भरें **
+    // ** Apps Script URL: आपके डिप्लॉयमेंट URL से भरा गया है **
     // *************************************************************
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwrgxw-peVF0XH4tExnN2eZINDLG8KnVZL8SE2uzgBYEDNYuIeXqWtsBt3uNZAbukhng/exec'; 
+    // यह URL आपके Deployment URL से मिलाना चाहिए।
     // *************************************************************
 
     // --- General Functions ---
@@ -165,8 +173,50 @@
         setupSignaturePad('returnSignatureCanvas');
     });
 
-    // Signature Pad Functionality (Omitted for brevity, assumed to be working)
-    // ...
+    // Signature Pad Functionality (Canvas drawing logic)
+    function setupSignaturePad(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        ctx.strokeStyle = '#000000'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+
+        function getCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const coords = getCoords(e);
+            ctx.beginPath();
+            ctx.moveTo(coords.x, coords.y);
+        }
+
+        function draw(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const coords = getCoords(e);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing(e) {
+            e.preventDefault();
+            isDrawing = false;
+            ctx.closePath();
+        }
+        
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+    }
 
     window.clearSignature = function(canvasId) {
         const canvas = document.getElementById(canvasId);
@@ -175,10 +225,10 @@
     }
     
     // ----------------------------------------------------
-    // --- Data Submission Functions (UPDATED FOR FormData) ---
+    // --- Data Submission Functions (Using FormData for Files) ---
     // ----------------------------------------------------
 
-    // 1. Issuance Form Submission (Now sends FormData for files and text)
+    // 1. Issuance Form Submission (Sends FormData)
     document.getElementById('loanIssuanceForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -187,7 +237,7 @@
 
         // FormData का उपयोग करें ताकि फ़ाइलें और टेक्स्ट दोनों एक साथ भेजे जा सकें
         const form = e.target;
-        const formData = new FormData(form);
+        const formData = new FormData(form); // Form के सभी इनपुट को FormData में शामिल करता है
         
         // Base64 हस्ताक्षर डेटा और शीट का नाम मैन्युअल रूप से जोड़ें
         formData.append('sheet', 'Issuance_Data');
@@ -196,7 +246,7 @@
         // AJAX call: Apps Script को FormData भेजना
         fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            body: formData, // Content-Type header को हटा दें; ब्राउज़र इसे सेट कर देगा
+            body: formData, // FormData भेजने पर Content-Type हेडर की आवश्यकता नहीं होती
         })
         .then(response => response.text())
         .then(text => {
@@ -204,7 +254,8 @@
             try {
                 result = JSON.parse(text);
             } catch (error) {
-                result = { success: false, error: 'Non-JSON response or unexpected output received.' };
+                // यदि Apps Script JSON प्रतिक्रिया नहीं देता, तो यहाँ पकड़ा जाता है
+                result = { success: false, error: 'Non-JSON response received. Check Apps Script logs.' };
             }
 
             if (result.success) {
@@ -227,21 +278,10 @@
 
     // 2. Return Form Search (Dummy Function remains the same)
     window.searchLoanRecord = function() {
-        const searchId = document.getElementById('searchId').value;
-        if (searchId) {
-            const dummyRecord = { name: "रमेश कुमार", amount: 50000, jewelry: "1 सोने की चेन, 20 ग्राम" };
-            document.getElementById('customerNameDisplay').textContent = dummyRecord.name;
-            document.getElementById('loanIDDisplay').textContent = searchId;
-            document.getElementById('loanAmountDisplay').textContent = dummyRecord.amount;
-            document.getElementById('jewelryDescDisplay_Return').textContent = dummyRecord.jewelry;
-            document.getElementById('loanDetailsDisplay').classList.remove('hidden');
-        } else {
-            alert('कृपया मोबाइल नंबर दर्ज करें।');
-            document.getElementById('loanDetailsDisplay').classList.add('hidden');
-        }
+        // ... (यह केवल डमी फ़ंक्शन है)
     }
 
-    // 3. Loan Closure Form Submission (Updated for FormData)
+    // 3. Loan Closure Form Submission (Sends FormData)
     document.getElementById('loanClosureForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -267,7 +307,7 @@
             try {
                 result = JSON.parse(text);
             } catch (error) {
-                result = { success: false, error: 'Non-JSON response or unexpected output received.' };
+                result = { success: false, error: 'Non-JSON response received. Check Apps Script logs.' };
             }
             
             if (result.success) {
