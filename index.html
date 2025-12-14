@@ -1,105 +1,213 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>आभूषण गिरवी - डिजिटल रिकॉर्ड</title>
-<style>
-body { font-family: Arial; margin:20px; background:#f4f4f9; color:#333; }
-.container { max-width:800px; margin:auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-h1{text-align:center;color:#0056b3;}
-input, textarea { width:100%; padding:8px; margin:5px 0; box-sizing:border-box;}
-input[type=file] { padding:5px; border:1px dashed #aaa; }
-canvas { border:1px solid #333; cursor:crosshair; display:block; margin-top:5px;}
-.btn { padding:8px 12px; margin-top:10px; border:none; border-radius:5px; cursor:pointer; background:#007bff;color:white;}
-.btn-clear{background:#f0ad4e;margin-left:10px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>आभूषण गिरवी - डिजिटल रिकॉर्ड</title>
+    <link rel="stylesheet" href="style.css"> 
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        h1 { text-align: center; color: #0056b3; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        fieldset { margin-bottom: 25px; border: 1px solid #007bff; padding: 20px; border-radius: 8px; }
+        legend { font-weight: bold; color: #007bff; padding: 0 10px; font-size: 1.2em; }
+        label { display: block; margin-bottom: 5px; margin-top: 10px; font-weight: 600; }
+        input[type="text"], input[type="number"], input[type="tel"], textarea {
+            width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
+        }
+        input[type="file"] { margin-bottom: 15px; border: 1px dashed #aaa; padding: 10px; width: 100%; border-radius: 5px;}
+        #signatureCanvas, #returnSignatureCanvas { border: 2px solid #333; background-color: #fff; cursor: crosshair; display: block; margin-top: 5px; }
+        .btn { padding: 10px 15px; background-color: #5cb85c; color: white; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; margin-top: 10px; }
+        .btn-clear { background-color: #f0ad4e; margin-left: 10px; }
+        .btn-primary { background-color: #007bff; }
+        .btn:hover { opacity: 0.9; }
+        .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; border-radius: 5px 5px 0 0; }
+        .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; font-size: 17px; }
+        .tab button:hover { background-color: #ddd; }
+        .tab button.active { background-color: #ccc; }
+        .tabcontent { padding: 6px 12px; border: 1px solid #ccc; border-top: none; background-color: white; border-radius: 0 0 5px 5px; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-<h1>आभूषण गिरवी - डिजिटल रिकॉर्ड</h1>
+    <h1>आभूषण गिरवी - डिजिटल रिकॉर्ड</h1>
 
-<form id="loanForm">
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'Issuance')">नया ऋण जारी करें</button>
+      <button class="tablinks" onclick="openTab(event, 'Return')">ऋण बंद करें / वापसी</button>
+    </div>
 
-<h3>ग्राहक विवरण</h3>
-<label>नाम:</label>
-<input type="text" name="name" required>
-<label>मोबाइल (Loan ID):</label>
-<input type="tel" name="mobile" required>
-<label>आधार/पहचान:</label>
-<input type="text" name="aadharId" required>
-<label>पता:</label>
-<textarea name="address" rows="2" required></textarea>
+    <div id="Issuance" class="tabcontent">
+        <h2>नया गिरवी रिकॉर्ड</h2>
+        <form id="loanIssuanceForm">
 
-<h3>गिरवी और ऋण विवरण</h3>
-<label>सोने का वजन (ग्राम):</label>
-<input type="number" name="goldWeight" step="0.01" required>
-<label>विवरण:</label>
-<textarea name="jewelryDesc" rows="2" required></textarea>
-<label>ऋण राशि (₹):</label>
-<input type="number" name="loanAmount" required>
-<label>ब्याज दर (% प्रति माह):</label>
-<input type="number" name="interestRate" step="0.1" required>
-<label>ऋण अवधि (महीने):</label>
-<input type="number" name="loanDuration" required>
+            <fieldset>
+                <legend>ग्राहक विवरण</legend>
+                <label for="name">नाम:</label>
+                <input type="text" id="name" name="name" required>
 
-<h3>Photos और हस्ताक्षर</h3>
-<label>ग्राहक फोटो:</label>
-<input type="file" name="customerPhoto" accept="image/*" capture="environment" required>
-<label>आधार फोटो:</label>
-<input type="file" name="aadharPhoto" accept="image/*" capture="environment" required>
-<label>आभूषण फोटो:</label>
-<input type="file" name="jewelryPhoto" accept="image/*" capture="environment" required>
+                <label for="mobile">मोबाइल नंबर (Loan ID):</label>
+                <input type="tel" id="mobile" name="mobile" required>
 
-<label>हस्ताक्षर:</label>
-<canvas id="signatureCanvas" width="300" height="100"></canvas>
-<button type="button" class="btn btn-clear" onclick="clearSignature()">साफ करें</button>
+                <label for="aadharId">आधार/पहचान संख्या:</label>
+                <input type="text" id="aadharId" name="aadharId" required>
+                
+                <label for="address">वर्तमान पता:</label>
+                <textarea id="address" name="address" rows="3" required></textarea>
+            </fieldset>
 
-<label>
-<input type="checkbox" required> मैं सभी शर्तों को स्वीकार करता हूँ।
-</label>
+            <fieldset>
+                <legend>गिरवी आभूषण और ऋण विवरण</legend>
+                <label for="goldWeight">सोने का वजन (ग्राम):</label>
+                <input type="number" id="goldWeight" name="goldWeight" step="0.01" required>
 
-<button type="submit" class="btn">डेटा सेव करें</button>
-</form>
+                <label for="jewelryDesc">विवरण (चेन, चूड़ी आदि):</label>
+                <textarea id="jewelryDesc" name="jewelryDesc" rows="2" required></textarea>
+                
+                <label for="loanAmount">ऋण राशि (₹):</label>
+                <input type="number" id="loanAmount" name="loanAmount" required>
+
+                <label for="interestRate">ब्याज दर (% प्रति माह):</label>
+                <input type="number" id="interestRate" name="interestRate" step="0.1" required>
+
+                <label for="loanDuration">ऋण अवधि (महीने):</label>
+                <input type="number" id="loanDuration" name="loanDuration" required>
+                
+                <p>समझौते की तारीख: <span id="agreementDate"></span></p>
+            </fieldset>
+            
+            <fieldset>
+                <legend>फोटो और हस्ताक्षर</legend>
+                <p style="color: #007bff; font-weight: bold;">✅ फ़ोटो अब Google Drive में सेव होंगी।</p>
+
+                <label for="aadharPhoto">1. आधार कार्ड की फोटो:</label>
+                <input type="file" id="aadharPhoto" name="aadharPhoto" accept="image/*" capture="environment" required>
+                
+                <label for="jewelryPhoto">2. गिरवी आभूषण की फोटो:</label>
+                <input type="file" id="jewelryPhoto" name="jewelryPhoto" accept="image/*" capture="environment" required>
+                
+                <p><strong>ग्राहक का डिजिटल हस्ताक्षर (सेव होगा):</strong></p>
+                <canvas id="signatureCanvas" width="300" height="100"></canvas>
+                <button type="button" class="btn btn-clear" onclick="clearSignature('signatureCanvas')">हस्ताक्षर साफ करें</button>
+                
+                <label style="margin-top: 15px;">
+                    <input type="checkbox" id="termsAccepted" required>
+                    मैं सभी **गैर-व्यावसायिक** शर्तों को स्वीकार करता हूँ।
+                </label>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary">ऋण जारी करें और डेटा सेव करें</button>
+
+        </form>
+    </div>
+
+    <div id="Return" class="tabcontent hidden">
+        <h2>ऋण बंद करें</h2>
+        <fieldset>
+            <legend>रिकॉर्ड सर्च करें</legend>
+            <label for="searchId">ग्राहक ID / मोबाइल नंबर डालें:</label>
+            <input type="text" id="searchId" name="searchId_return" placeholder="रिकॉर्ड खोजने के लिए मोबाइल नंबर (Loan ID)" required>
+            <button type="button" class="btn" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
+        </fieldset>
+
+        <div id="loanDetailsDisplay" class="hidden">
+            <h3 style="color: #009688;">रिकॉर्ड मिला! (नाम: <span id="customerNameDisplay"></span>)</h3>
+            <p><strong>ऋण ID (मोबाइल):</strong> <span id="loanIDDisplay"></span></p>
+            <p><strong>ऋण राशि:</strong> ₹<span id="loanAmountDisplay"></span></p>
+            <p><strong>आभूषण:</strong> <span id="jewelryDescDisplay_Return"></span></p>
+            
+            <form id="loanClosureForm">
+                <fieldset>
+                    <legend>सामान वापसी और अभिस्वीकृति</legend>
+                    <label for="closeDate">समापन की तारीख:</label>
+                    <input type="text" id="closeDate" readonly>
+
+                    <label for="totalPaidAmount">चुकाई गई कुल राशि (मूलधन + ब्याज):</label>
+                    <input type="number" id="totalPaidAmount" name="totalPaidAmount" required>
+
+                    <label for="returnNote">गिरवीधारी का नोट:</label>
+                    <textarea id="returnNote" name="returnNote" rows="3" required placeholder="जैसे: 'सामान का चुकता किया गया, ग्राहक को संतुष्टि के साथ वापस कर दिया गया।'"></textarea>
+                    
+                    <p><strong>ग्राहक का वापसी हस्ताक्षर (सेव होगा):</strong></p>
+                    <canvas id="returnSignatureCanvas" width="300" height="100"></canvas>
+                    <button type="button" class="btn btn-clear" onclick="clearSignature('returnSignatureCanvas')">हस्ताक्षर साफ करें</button>
+                    
+                    <button type="submit" class="btn btn-primary">ऋण बंद करें और डेटा सेव करें</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEGQdhXIjM8bmOXQyMDxX17NDLGXj8OyjyBDN_5q6qEt3wu-AWLEZXoTi8zjykxo4igw/exec'; // ← यहाँ अपना Web App URL डालो
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHtApB8b710FFQnie95hXkRJl7uW2_lFfHXdopi7AUa3jOk2egbkhs5pds7jmpOmjLOA/exec'; // इसे बदलें
 
-// Signature pad setup
-const canvas = document.getElementById('signatureCanvas');
-const ctx = canvas.getContext('2d');
-let isDrawing = false;
+function openTab(evt, tabName) {
+    let tabcontent = document.getElementsByClassName("tabcontent");
+    for (let i = 0; i < tabcontent.length; i++) tabcontent[i].classList.add("hidden");
+    let tablinks = document.getElementsByClassName("tablinks");
+    for (let i = 0; i < tablinks.length; i++) tablinks[i].className = tablinks[i].className.replace(" active","");
+    document.getElementById(tabName).classList.remove("hidden");
+    evt.currentTarget.className += " active";
+}
 
-canvas.addEventListener('mousedown', e=>{isDrawing=true;ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY);});
-canvas.addEventListener('mousemove', e=>{if(isDrawing){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();}});
-canvas.addEventListener('mouseup', e=>{isDrawing=false;ctx.closePath();});
-canvas.addEventListener('mouseout', e=>{isDrawing=false;});
-
-function clearSignature(){ctx.clearRect(0,0,canvas.width,canvas.height);}
-
-// Form submit
-document.getElementById('loanForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-formData.append('sheet', 'Issuance_Data');
-formData.append('signatureData', document.getElementById('signatureCanvas').toDataURL('image/png'));
-
-
-    fetch(APPS_SCRIPT_URL,{
-        method:'POST',
-        body: formData
-    })
-    .then(res=>res.json())
-    .then(res=>{
-        if(res.success){alert('✅ डेटा सेव हो गया'); form.reset(); clearSignature();}
-        else{alert('❌ डेटा सेव में error: '+res.message);}
-    })
-    .catch(err=>{alert('❌ नेटवर्क error'); console.error(err);});
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('agreementDate').textContent = new Date().toLocaleDateString('hi-IN');
+    document.getElementById('closeDate').value = new Date().toLocaleDateString('hi-IN');
+    document.querySelector(".tablinks").click();
+    setupSignaturePad('signatureCanvas');
+    setupSignaturePad('returnSignatureCanvas');
 });
-</script>
 
+function setupSignaturePad(canvasId){
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    let isDrawing=false; ctx.strokeStyle='#000'; ctx.lineWidth=2; ctx.lineCap='round';
+    function getCoords(e){ const rect=canvas.getBoundingClientRect(); const x=e.touches?e.touches[0].clientX:e.clientX; const y=e.touches?e.touches[0].clientY:e.clientY; return {x:x-rect.left, y:y-rect.top};}
+    function start(e){ e.preventDefault(); isDrawing=true; const c=getCoords(e); ctx.beginPath(); ctx.moveTo(c.x,c.y);}
+    function draw(e){ e.preventDefault(); if(!isDrawing) return; const c=getCoords(e); ctx.lineTo(c.x,c.y); ctx.stroke();}
+    function stop(e){ e.preventDefault(); isDrawing=false; ctx.closePath();}
+    canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',draw);
+    canvas.addEventListener('mouseup',stop); canvas.addEventListener('mouseout',stop);
+    canvas.addEventListener('touchstart',start); canvas.addEventListener('touchmove',draw); canvas.addEventListener('touchend',stop);
+}
+
+window.clearSignature=function(canvasId){ const canvas=document.getElementById(canvasId); const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);}
+
+// Issuance Form Submit
+document.getElementById('loanIssuanceForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const submitButton=e.submitter; submitButton.disabled=true;
+    const formData=new FormData(e.target);
+    formData.append('sheet','Issuance_Data');
+    formData.append('signatureData',document.getElementById('signatureCanvas').toDataURL('image/png'));
+    fetch(APPS_SCRIPT_URL,{method:'POST',body:formData})
+    .then(res=>res.text()).then(text=>{let result; try{result=JSON.parse(text);}catch(err){result={success:false,error:'Non-JSON response'}}; if(result.success){alert('✅ रिकॉर्ड सेव हो गया'); e.target.reset(); clearSignature('signatureCanvas');}else{alert('❌ डेटा सेव में error: '+(result.error||'अज्ञात त्रुटि')); console.error(result.error);} }).catch(err=>{alert('❌ नेटवर्क त्रुटि'); console.error(err);}).finally(()=>{submitButton.disabled=false;});
+});
+
+// Return Form Submit (same logic)
+document.getElementById('loanClosureForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const submitButton=e.submitter; submitButton.disabled=true;
+    const formData=new FormData(e.target);
+    formData.append('sheet','Return_Data');
+    formData.append('searchId',document.getElementById('searchId').value);
+    formData.append('returnSignatureData',document.getElementById('returnSignatureCanvas').toDataURL('image/png'));
+    fetch(APPS_SCRIPT_URL,{method:'POST',body:formData})
+    .then(res=>res.text()).then(text=>{let result; try{result=JSON.parse(text);}catch(err){result={success:false,error:'Non-JSON response'}}; if(result.success){alert('✅ ऋण बंद हो गया'); document.getElementById('loanDetailsDisplay').classList.add('hidden'); e.target.reset(); clearSignature('returnSignatureCanvas');}else{alert('❌ डेटा सेव में error: '+(result.error||'अज्ञात त्रुटि')); console.error(result.error);} }).catch(err=>{alert('❌ नेटवर्क त्रुटि'); console.error(err);}).finally(()=>{submitButton.disabled=false;});
+});
+
+// Dummy Search
+window.searchLoanRecord=function(){
+    const searchId=document.getElementById('searchId').value;
+    if(searchId){document.getElementById('customerNameDisplay').textContent="रमेश कुमार";
+    document.getElementById('loanIDDisplay').textContent=searchId;
+    document.getElementById('loanAmountDisplay').textContent=50000;
+    document.getElementById('jewelryDescDisplay_Return').textContent="1 सोने की चेन, 20 ग्राम";
+    document.getElementById('loanDetailsDisplay').classList.remove('hidden');} else {alert('कृपया मोबाइल नंबर दर्ज करें');document.getElementById('loanDetailsDisplay').classList.add('hidden');}
+}
+</script>
 </body>
 </html>
