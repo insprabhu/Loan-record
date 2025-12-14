@@ -4,30 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>आभूषण गिरवी - डिजिटल रिकॉर्ड</title>
+    <link rel="stylesheet" href="style.css"> 
+
     <style>
-        /* CSS (डिज़ाइन) */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
-        h1 { text-align: center; color: #0056b3; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        fieldset { margin-bottom: 25px; border: 1px solid #007bff; padding: 20px; border-radius: 8px; }
-        legend { font-weight: bold; color: #007bff; padding: 0 10px; font-size: 1.2em; }
-        label { display: block; margin-bottom: 5px; margin-top: 10px; font-weight: 600; }
-        input[type="text"], input[type="number"], input[type="tel"], textarea {
-            width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
+        /* CSS (डिज़ाइन) - Tabs के लिए जो स्टाइलिंग style.css में नहीं थी (आपके पिछले index.html से) */
+        /*
+          नोट: आपके द्वारा अपलोड किए गए style.css में उन्नत स्टाइलिंग थी,
+          लेकिन पुराने index.html में कुछ मूल स्टाइलिंग थी।
+          मैंने इसे साफ़ कर दिया है और style.css पर निर्भरता रखी है।
+          यदि आप पुराने tab styles चाहते हैं, तो उन्हें यहाँ जोड़ें या style.css में ले जाएँ। 
+        */
+        .tab { overflow: hidden; border-bottom: 2px solid var(--primary-color, #007bff); margin-bottom: 20px; }
+        .tab button { 
+            background-color: #f1f1f1; float: left; border: none; outline: none; cursor: pointer; 
+            padding: 14px 25px; transition: 0.3s; font-size: 16px; font-weight: 600;
+            border-radius: 8px 8px 0 0; margin-right: 5px; color: #555;
         }
-        input[type="file"] { margin-bottom: 15px; border: 1px dashed #aaa; padding: 10px; width: 100%; border-radius: 5px;}
-        #signatureCanvas, #returnSignatureCanvas { border: 2px solid #333; background-color: #fff; cursor: crosshair; display: block; margin-top: 5px; }
-        .btn { padding: 10px 15px; background-color: #5cb85c; color: white; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; margin-top: 10px; }
-        .btn-clear { background-color: #f0ad4e; margin-left: 10px; }
-        .btn-primary { background-color: #007bff; }
-        .btn:hover { opacity: 0.9; }
-        
-        /* Tabs */
-        .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; border-radius: 5px 5px 0 0; }
-        .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 14px 16px; transition: 0.3s; font-size: 17px; }
-        .tab button:hover { background-color: #ddd; }
-        .tab button.active { background-color: #ccc; }
-        .tabcontent { padding: 6px 12px; border: 1px solid #ccc; border-top: none; background-color: white; border-radius: 0 0 5px 5px; }
+        .tab button:hover { background-color: #e9ecef; }
+        .tab button.active { background-color: var(--primary-color, #007bff); color: white; border-bottom: none; }
+        .tabcontent { 
+            padding: 20px; border: 1px solid #ced4da; border-radius: 0 0 10px 10px; 
+            background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
         .hidden { display: none; }
     </style>
 </head>
@@ -44,7 +42,6 @@
     <div id="Issuance" class="tabcontent">
         <h2>नया गिरवी रिकॉर्ड</h2>
         <form id="loanIssuanceForm">
-
             <fieldset>
                 <legend>ग्राहक विवरण</legend>
                 <label for="name">नाम:</label>
@@ -83,16 +80,16 @@
             <fieldset>
                 <legend>फोटो और हस्ताक्षर</legend>
                 
-                <p>💡 **फोटो सूचना:** सरलतम सेटअप के कारण, फ़ोटो सीधे सेव नहीं होंगी। आपको फ़ोटो लेकर ड्राइव पर अपलोड करके लिंक को शीट में मैन्युअल रूप से डालना होगा।</p>
+                <p style="color: #007bff; font-weight: bold;">✅ फ़ॉर्म भरते समय फ़ोटो सीधे फ़ोन से कैप्चर करें और अपलोड करें।</p>
 
-                <p><strong>1. ग्राहक की लाइव फोटो:</strong></p>
-                <input type="file" id="customerPhoto" accept="image/*" required>
+                <label for="customerPhoto">1. ग्राहक की लाइव फोटो:</label>
+                <input type="file" id="customerPhoto" name="customerPhoto" accept="image/*" capture="environment" required>
                 
-                <p><strong>2. आधार कार्ड की फोटो:</strong></p>
-                <input type="file" id="aadharPhoto" accept="image/*" required>
+                <label for="aadharPhoto">2. आधार कार्ड की फोटो:</label>
+                <input type="file" id="aadharPhoto" name="aadharPhoto" accept="image/*" capture="environment" required>
                 
-                <p><strong>3. गिरवी आभूषण की फोटो:</strong></p>
-                <input type="file" id="jewelryPhoto" accept="image/*" required>
+                <label for="jewelryPhoto">3. गिरवी आभूषण की फोटो:</label>
+                <input type="file" id="jewelryPhoto" name="jewelryPhoto" accept="image/*" capture="environment" required>
                 
                 <p><strong>4. ग्राहक का डिजिटल हस्ताक्षर (सेव होगा):</strong></p>
                 <canvas id="signatureCanvas" width="300" height="100"></canvas>
@@ -116,8 +113,8 @@
         <fieldset>
             <legend>रिकॉर्ड सर्च करें</legend>
             <label for="searchId">ग्राहक ID / मोबाइल नंबर डालें:</label>
-            <input type="text" id="searchId" placeholder="रिकॉर्ड खोजने के लिए मोबाइल नंबर (Loan ID)" required>
-            <button type="button" class="btn" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
+            <input type="text" id="searchId" name="searchId_return" placeholder="रिकॉर्ड खोजने के लिए मोबाइल नंबर (Loan ID)" required>
+            <button type="button" class="btn btn-primary" style="background-color: #17a2b8;" onclick="searchLoanRecord()">रिकॉर्ड खोजें (Dummy)</button>
         </fieldset>
 
         <div id="loanDetailsDisplay" class="hidden">
@@ -134,10 +131,10 @@
                     <input type="text" id="closeDate" readonly>
 
                     <label for="totalPaidAmount">चुकाई गई कुल राशि (मूलधन + ब्याज):</label>
-                    <input type="number" id="totalPaidAmount" required>
+                    <input type="number" id="totalPaidAmount" name="totalPaidAmount" required>
 
                     <label for="returnNote">गिरवीधारी का नोट (सामान का चुकता):</label>
-                    <textarea id="returnNote" rows="3" required placeholder="जैसे: 'सामान का चुकता किया गया, ग्राहक को संतुष्टि के साथ वापस कर दिया गया।'"></textarea>
+                    <textarea id="returnNote" name="returnNote" rows="3" required placeholder="जैसे: 'सामान का चुकता किया गया, ग्राहक को संतुष्टि के साथ वापस कर दिया गया।'"></textarea>
                     
                     <p><strong>ग्राहक का वापसी हस्ताक्षर (सेव होगा):</strong></p>
                     <canvas id="returnSignatureCanvas" width="300" height="100"></canvas>
@@ -152,14 +149,12 @@
 
 <script>
     // *************************************************************
-    // *************************************************************
-    // ** अति आवश्यक: कृपया इस लाइन को अपने Apps Script Deployment URL से बदलें **
-    // ** यह URL 'https://script.google.com/macros/s/...' से शुरू होता है **
+    // ** Apps Script URL: आपके डिप्लॉयमेंट URL से भरा गया है **
     // *************************************************************
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwrgxw-peVF0XH4tExnN2eZINDLG8KnVZL8SE2uzgBYEDNYuIeXqWtsBt3uNZAbukhng/exec'; 
     // *************************************************************
 
-    // --- General Functions ---
+    // --- General Functions (Same as before) ---
     function openTab(evt, tabName) {
         let i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
@@ -177,13 +172,13 @@
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('agreementDate').textContent = new Date().toLocaleDateString('hi-IN');
         document.getElementById('closeDate').value = new Date().toLocaleDateString('hi-IN');
-        document.querySelector(".tablinks").click(); // Default tab open
+        document.querySelector(".tablinks").click(); 
         
         setupSignaturePad('signatureCanvas');
         setupSignaturePad('returnSignatureCanvas');
     });
 
-    // Signature Pad Functionality
+    // Signature Pad Functionality (Same as before)
     function setupSignaturePad(canvasId) {
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext('2d');
@@ -235,75 +230,61 @@
     }
     
     // ----------------------------------------------------
-    // --- Data Submission Functions (Linking to GAS) ---
+    // --- Data Submission Functions (UPDATED FOR FILES) ---
     // ----------------------------------------------------
 
-    // 1. Issuance Form Submission
+    // 1. Issuance Form Submission (Now sends FormData for files)
     document.getElementById('loanIssuanceForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        if (APPS_SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') {
-            alert('❌ त्रुटि: कृपया APPS_SCRIPT_URL को अपने डिप्लॉयमेंट URL से बदलें।');
-            return;
-        }
+        const submitButton = e.submitter;
+        submitButton.disabled = true;
 
-        const data = {
-            sheet: 'Issuance_Data', // टारगेट शीट
-            // फॉर्म फील्ड्स से वैल्यू लेना
-            name: document.getElementById('name').value,
-            mobile: document.getElementById('mobile').value,
-            aadharId: document.getElementById('aadharId').value,
-            address: document.getElementById('address').value,
-            goldWeight: document.getElementById('goldWeight').value,
-            jewelryDesc: document.getElementById('jewelryDesc').value,
-            loanAmount: document.getElementById('loanAmount').value,
-            interestRate: document.getElementById('interestRate').value,
-            loanDuration: document.getElementById('loanDuration').value,
-            signatureData: document.getElementById('signatureCanvas').toDataURL('image/png') // हस्ताक्षर डेटा
-        };
+        // FormData का उपयोग करें ताकि फ़ाइलें और टेक्स्ट दोनों एक साथ भेजे जा सकें
+        const form = e.target;
+        const formData = new FormData(form);
         
-        // AJAX कॉल: Apps Script को डेटा भेजना
+        // Base64 हस्ताक्षर डेटा और शीट का नाम मैन्युअल रूप से जोड़ें
+        formData.append('sheet', 'Issuance_Data');
+        formData.append('signatureData', document.getElementById('signatureCanvas').toDataURL('image/png'));
+        
+        // AJAX call: Apps Script को FormData भेजना
         fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify(data)
-            // महत्वपूर्ण बदलाव: 'Content-Type': 'application/json' हेडर हटा दिया गया है
+            body: formData, // Content-Type header को हटा दें; ब्राउज़र इसे सेट कर देगा
         })
-        .then(response => {
-             // Apps Script response को हैंडल करना (यह हमेशा एक JSON response नहीं भेजता है)
-             // इसलिए हम पहले response.text() पर जाते हैं, फिर JSON को मैन्युअल रूप से पार्स करते हैं
-             return response.text(); 
-        })
+        .then(response => response.text())
         .then(text => {
             let result;
             try {
                 result = JSON.parse(text);
-            } catch (e) {
-                // यदि Apps Script ने सादा टेक्स्ट भेजा
-                result = { success: false, error: 'Non-JSON response received. Check Apps Script logs.' };
+            } catch (error) {
+                result = { success: false, error: 'Non-JSON response or unexpected output received.' };
             }
 
             if (result.success) {
-                alert('✅ नया रिकॉर्ड सफलतापूर्वक Google Sheet में सेव हो गया है। और हस्ताक्षर Drive में सेव हो गया है।');
+                alert('✅ रिकॉर्ड सफलतापूर्वक Google Sheet में सेव हो गया है। फोटो और हस्ताक्षर Drive में सेव हो गए हैं।');
                 e.target.reset();
                 clearSignature('signatureCanvas');
             } else {
-                alert('❌ डेटा सेव करते समय त्रुटि हुई: ' + result.error);
+                alert('❌ डेटा सेव करते समय त्रुटि हुई।');
                 console.error('Submission Error:', result.error);
             }
         })
         .catch(error => {
             alert('❌ नेटवर्क त्रुटि: डेटा सेव नहीं हो पाया।');
             console.error('Network Error:', error);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
         });
     });
 
-    // 2. Return Form Search (Dummy Function for UX)
+    // 2. Return Form Search (Dummy Function remains the same)
     window.searchLoanRecord = function() {
         const searchId = document.getElementById('searchId').value;
         if (searchId) {
-            // यह सिर्फ एक दिखावटी फंक्शन है। असली डेटाबेस से लिंक करने के लिए एडवांस कोड चाहिए।
             const dummyRecord = { name: "रमेश कुमार", amount: 50000, jewelry: "1 सोने की चेन, 20 ग्राम" };
-            
             document.getElementById('customerNameDisplay').textContent = dummyRecord.name;
             document.getElementById('loanIDDisplay').textContent = searchId;
             document.getElementById('loanAmountDisplay').textContent = dummyRecord.amount;
@@ -315,38 +296,33 @@
         }
     }
 
-    // 3. Loan Closure Form Submission
+    // 3. Loan Closure Form Submission (Updated for FormData)
     document.getElementById('loanClosureForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        if (APPS_SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') {
-            alert('❌ त्रुटि: कृपया APPS_SCRIPT_URL को अपने डिप्लॉयमेंट URL से बदलें।');
-            return;
-        }
+        const submitButton = e.submitter;
+        submitButton.disabled = true;
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        // Base64 हस्ताक्षर डेटा और शीट का नाम मैन्युअल रूप से जोड़ें
+        formData.append('sheet', 'Return_Data');
+        formData.append('searchId', document.getElementById('searchId').value); // Search ID भी भेजें
+        formData.append('returnSignatureData', document.getElementById('returnSignatureCanvas').toDataURL('image/png'));
 
-        const data = {
-            sheet: 'Return_Data', // टारगेट शीट
-            searchId: document.getElementById('searchId').value, // Loan ID
-            totalPaidAmount: document.getElementById('totalPaidAmount').value,
-            returnNote: document.getElementById('returnNote').value,
-            returnSignatureData: document.getElementById('returnSignatureCanvas').toDataURL('image/png')
-        };
-
-        // AJAX कॉल: Apps Script को डेटा भेजना
+        // AJAX call: Apps Script को FormData भेजना
         fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify(data)
-             // महत्वपूर्ण बदलाव: 'Content-Type': 'application/json' हेडर हटा दिया गया है
+            body: formData,
         })
-        .then(response => {
-            return response.text(); 
-        })
+        .then(response => response.text())
         .then(text => {
             let result;
             try {
                 result = JSON.parse(text);
-            } catch (e) {
-                result = { success: false, error: 'Non-JSON response received. Check Apps Script logs.' };
+            } catch (error) {
+                result = { success: false, error: 'Non-JSON response or unexpected output received.' };
             }
             
             if (result.success) {
@@ -355,13 +331,16 @@
                 document.getElementById('loanClosureForm').reset();
                 clearSignature('returnSignatureCanvas');
             } else {
-                alert('❌ डेटा सेव करते समय त्रुटि हुई: ' + result.error);
+                alert('❌ डेटा सेव करते समय त्रुटि हुई।');
                 console.error('Submission Error:', result.error);
             }
         })
         .catch(error => {
             alert('❌ नेटवर्क त्रुटि: डेटा सेव नहीं हो पाया।');
             console.error('Network Error:', error);
+        })
+        .finally(() => {
+            submitButton.disabled = false;
         });
     });
 
